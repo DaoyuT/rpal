@@ -1,0 +1,11 @@
+#!/bin/sh
+#
+rm -f diff_result.out
+
+for i in `ls ./out`
+do
+	echo "Now diff output file" $i ...
+	diff ./out/$i ./rpal_out/$i >> diff_result.out
+done
+
+cat diff_result.out
