@@ -16,8 +16,8 @@ How to run the program
 
 What's more
 ===========
-- $ make cl.....................# clean p1 and all .o files in bin as well as output files in 'out' directory|
-- $ ./run_tests_rpal............# this will clean all the output files in 'rpal_out' directory first|
+- $ make cl 			# clean p1 and all .o files in bin as well as output files in 'out' directory|
+- $ ./run_tests_rpal 		# this will clean all the output files in 'rpal_out' directory first|
 
 Structrue
 =========
