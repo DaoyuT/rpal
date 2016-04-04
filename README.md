@@ -16,17 +16,17 @@ How to run the program
 
 What's more
 ===========
-$ make cl 			# clean p1 and all .o files in bin as well as output files in 'out' directory
-$ ./run_tests_rpal 		# this will clean all the output files in 'rpal_out' directory first
+-$ make cl 			# clean p1 and all .o files in bin as well as output files in 'out' directory
+-$ ./run_tests_rpal 		# this will clean all the output files in 'rpal_out' directory first
 
 Structrue
 =========
-. 		makefile, readme, rpal, p1, diff_result.out and all the shell script files to help the test
-./bin 		stores all the .o files
-./out 		stores all the output files by p1
-./rpal_out 	stores all the output files by rpal
-./src 		stores all the source code
-./tests 	stores all the original test files
+-. 		makefile, readme, rpal, p1, diff_result.out and all the shell script files to help the test
+-./bin 		stores all the .o files
+-./out 		stores all the output files by p1
+-./rpal_out 	stores all the output files by rpal
+-./src 		stores all the source code
+-./tests 	stores all the original test files
 
 BUGS
 ====
