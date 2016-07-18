@@ -24,6 +24,8 @@ public:
     Token nextToken;
     bool reachedEOF = false;
     int debugMode = 0;
+    set<int> STTreeTypes;
+    set<string> STTreeContents;
 
 	Lexicon(const char* fileName);
 	~Lexicon();
@@ -44,9 +46,20 @@ public:
 	void printTree();
 	void printErrorTree();
 	void printTreeHelper(ASTNode* node, int level);
+	void standardizeTree();
+	void standardizeHelper(ASTNode* node);
+	void standardizeLet(ASTNode* node);
+	void standardizeWhere(ASTNode* node);
+	void standardizeMultiParams(ASTNode* node);
+	void standardizeWithin(ASTNode* node);
+	void standardizeAt(ASTNode* node);
+	void standardizeAnd(ASTNode* node);
+	void standardizeRec(ASTNode* node);
+	void checkNode(ASTNode* node, string name);
+	void destroyAST(ASTNode* node);
 
 	// procedure
-	void start();
+	void startParse();
 	void read(int type, string content, string calledBy);
 	void procE();
 	void procEw();

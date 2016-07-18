@@ -1,0 +1,4 @@
+let Sum A = Psum A
+		where rec Psum X = X eq 0 -> 0
+                                  | Psum (X - 1)
+in Print ( Sum 2 )

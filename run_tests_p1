@@ -1,7 +1,0 @@
-#!/bin/sh
-#
-for i in `ls tests`
-do
-	echo "Now running test program" $i ...
-	./p1 -ast ./tests/$i > ./out/$i.out
-done

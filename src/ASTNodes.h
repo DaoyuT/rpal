@@ -1,4 +1,6 @@
 #include "header.h"
+#ifndef ASTNODES
+#define ASTNODES
 
 using namespace std;
 
@@ -6,8 +8,12 @@ class ASTNode {
 public:
 	ASTNode* left = NULL;
 	ASTNode* right = NULL;
+	//ASTNode* parent = NULL;
 
 	virtual string toString() = 0;
+	virtual void setContent(string content) = 0;
+	virtual int getType() = 0;
+	virtual string getContent() = 0;
 };
 
 class ASTNode_NT: public ASTNode {
@@ -17,6 +23,9 @@ public:
 	ASTNode_NT(string name);
 	~ASTNode_NT();
 	string toString();
+	void setContent(string content);
+	int getType();
+	string getContent();
 };
 
 class ASTNode_ID: public ASTNode {
@@ -34,6 +43,9 @@ public:
 	ASTNode_ID(int type, string content);
 	~ASTNode_ID();
 	string toString();
+	void setContent(string content);
+	int getType();
+	string getContent();
 };
 
 class ASTNode_INT: public ASTNode {
@@ -44,4 +56,9 @@ public:
 	ASTNode_INT(int content);
 	~ASTNode_INT();
 	string toString();
+	void setContent(string content);
+	int getType();
+	string getContent();
 };
+
+#endif

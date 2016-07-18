@@ -16,6 +16,18 @@ string ASTNode_NT :: toString() {
 	return name;
 }
 
+void ASTNode_NT :: setContent(string _content) {
+	name = _content;
+}
+
+int ASTNode_NT :: getType() {
+	return -1;
+}
+
+string ASTNode_NT :: getContent() {
+	return name;
+}
+
 // --------------------------------------------ASTNode_ID--------------------------------------------
 
 const vector<string> ASTNode_ID :: names ({"ID", "STR", "BOOL", "NIL", "DUMMY"});
@@ -32,6 +44,18 @@ string ASTNode_ID :: toString() {
 	}
 }
 
+void ASTNode_ID :: setContent(string _content) {
+	//content = _content;
+}
+
+int ASTNode_ID :: getType() {
+	return type;
+}
+
+string ASTNode_ID :: getContent() {
+	return content;
+}
+
 // --------------------------------------------ASTNode_INT--------------------------------------------
 
 ASTNode_INT :: ASTNode_INT(int content): content(content) {}
@@ -40,4 +64,16 @@ ASTNode_INT :: ~ASTNode_INT() {}
 
 string ASTNode_INT :: toString() {
 	return "<" + name + ":" + to_string(content) + ">" ;
+}
+
+void ASTNode_INT :: setContent(string _content) {
+	//content = _content; string to int stoi
+}
+
+int ASTNode_INT :: getType() {
+	return 5;
+}
+
+string ASTNode_INT :: getContent() {
+	return to_string(content);
 }

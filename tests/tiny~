@@ -94,7 +94,7 @@ let rec CC C s =
 in
 let PP P =
      not (Istuple P) -> (fn i. 'error14')
-   | Debug(not ((P 1) @EQ 'program')) -> (fn i. 'error15')
+   | not ((P 1) @EQ 'program') -> (fn i. 'error15')
    | ((fn i. CC (P 2) ((fn i.'undef'),i,nil)) @COMP (fn s.(s 3))  )
 			    
 in

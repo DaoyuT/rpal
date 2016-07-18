@@ -1,0 +1,19 @@
+How to run the program
+======================
+
+1. cd to this directory
+2. $ make  			# compile
+3. $ ./p2 fimename		# parse the file, make the AST, standardize the tree and run it in CSE machine
+3. $ ./p2 -ast filename		# print the AST
+4. $ ./p2 -debug filename	# print the AST, standardized AST and the controler structure while running the program
+
+Structrue
+=========
+. 		makefile, readme, p2
+./bin 		stores all the .o files
+./src 		stores all the source code
+./tests 	stores all the original test files and some other cases
+
+BUGS
+====
+This interpreter can not run medium well, but it can run most of the test files correctly in the first project.

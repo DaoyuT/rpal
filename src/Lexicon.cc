@@ -24,6 +24,17 @@ Lexicon :: Lexicon(const char* fileName): fileName(fileName), lineNum(1), colNum
 
 Lexicon :: ~Lexicon () {
 	file.close();
+	destroyAST(root);
+	root = NULL;
+}
+
+void Lexicon :: destroyAST(ASTNode* node) {
+	if (node == NULL) {
+		return;
+	}
+	destroyAST(node->left);
+	destroyAST(node->right);
+	delete node;
 }
 
 void Lexicon :: print() {
@@ -236,12 +247,14 @@ void Lexicon :: buildTree(string name, int numOfCh) {
 		ASTNode* elderBro = stackOfNodes.top();
 		stackOfNodes.pop();
 		elderBro->right = p;
+		//p->parent = elderBro;
 		p = elderBro;
 		numOfCh--;
 	}
-	ASTNode_NT* parent = new ASTNode_NT(name);
-	parent->left = p;
-	stackOfNodes.push(parent);
+	ASTNode_NT* newNT = new ASTNode_NT(name);
+	newNT->left = p;
+	//p->parent = newNT;
+	stackOfNodes.push(newNT);
 }
 
 void Lexicon :: printTree() {
@@ -265,8 +278,177 @@ void Lexicon :: printTreeHelper(ASTNode* node, int level) {
 		return;
 	}
 	cout << string(level, '.') << node->toString() + " " << endl;
+	STTreeTypes.insert(node->getType());
+	if (node->getType() != 0 && node->getType() != 1) {
+		STTreeContents.insert(node->getContent());
+	}
 	printTreeHelper(node->left, level + 1);
 	printTreeHelper(node->right, level);
+}
+
+// --------------------------------------------Standardize--------------------------------------------
+
+void Lexicon :: standardizeTree() {
+	standardizeHelper(root);
+}
+
+void Lexicon :: checkNode(ASTNode* node, string name) {
+	if (node->toString() != name) {
+		cout << "Wrong node while standardizing: \"" << name << "\" expected, but \"" << node->toString() << "\" found."<< endl;
+		exit(0);
+	}
+}
+
+void Lexicon :: standardizeHelper(ASTNode* node) {
+	if (node == NULL) {
+		return;
+	}
+	standardizeHelper(node->left);
+	standardizeHelper(node->right);
+	if (node->toString() == "let") {
+		standardizeLet(node);
+	} else if (node->toString() == "where") {
+		standardizeWhere(node);
+	} else if (node->toString() == "function_form") {
+		node->setContent("=");
+		standardizeMultiParams(node);
+	} else if (node->toString() == "lambda") {
+		standardizeMultiParams(node);
+	} else if (node->toString() == "within") {
+		standardizeWithin(node);
+	} else if (node->toString() == "@") {
+		standardizeAt(node);
+	} else if (node->toString() == "and") {
+		standardizeAnd(node);
+	} else if (node->toString() == "rec") {
+		standardizeRec(node);
+	} 
+}
+
+void Lexicon :: standardizeLet(ASTNode* node) {
+	node->setContent("gamma");
+	ASTNode* equalNode = node->left;
+	ASTNode* X = equalNode->left;
+	ASTNode* P = equalNode->right;
+	ASTNode* E = X->right;
+	checkNode(equalNode, "=");
+	ASTNode* newLambda = new ASTNode_NT("lambda");
+	node->left = newLambda;
+	newLambda->left = X;
+	newLambda->right = E;
+	X->right = P;
+	delete equalNode;
+}
+
+void Lexicon :: standardizeWhere(ASTNode* node) {
+	node->setContent("gamma");
+	ASTNode* P = node->left;
+	ASTNode* equalNode = P->right;
+	ASTNode* X = equalNode->left;
+	ASTNode* E = X->right; 
+	checkNode(equalNode, "=");
+	ASTNode* newLambda = new ASTNode_NT("lambda");
+	node->left = newLambda;
+	newLambda->left = X;
+	newLambda->right = E;
+	X->right = P;
+	P->right = NULL;
+	delete equalNode;
+}
+
+void Lexicon :: standardizeMultiParams(ASTNode* node) {
+	ASTNode* pre = node->left;		// function name 		first parameter
+	ASTNode* curr = pre->right;		// first parameter 		second parameter or body
+	while (curr->right != NULL) {
+		ASTNode* newLambda = new ASTNode_NT("lambda");
+		pre->right = newLambda;
+		newLambda->left = curr;
+		pre = curr;
+		curr = curr->right;
+	}
+}
+
+void Lexicon :: standardizeWithin(ASTNode* node) {
+	node->setContent("=");
+	ASTNode* equalNode1 = node->left;
+	ASTNode* equalNode2 = equalNode1->right;
+	ASTNode* X1 = equalNode1->left;
+	ASTNode* E1 = X1->right;
+	ASTNode* X2 = equalNode2->left;
+	ASTNode* E2 = X2->right;
+	checkNode(equalNode1, "=");
+	checkNode(equalNode2, "=");
+	ASTNode* newLambda = new ASTNode_NT("lambda");
+	ASTNode* newGamma = new ASTNode_NT("gamma");
+	node->left = X2;
+	X2->right = newGamma;
+	newGamma->left = newLambda;
+	newLambda->left = X1;
+	newLambda->right = E1;
+	X1->right = E2;
+	delete equalNode1;
+	delete equalNode2;
+}
+
+void Lexicon :: standardizeAt(ASTNode* node) {
+	node->setContent("gamma");
+	ASTNode* E1 = node->left;
+	ASTNode* N = E1->right;
+	ASTNode* E2 = N->right;
+	ASTNode* newGamma = new ASTNode_NT("gamma");
+	node->left = newGamma;
+	newGamma->left = N;
+	newGamma->right = E2;
+	N->right = E1;
+	E1->right = NULL;
+}
+
+void Lexicon :: standardizeAnd(ASTNode* node) {
+	node->setContent("=");
+	ASTNode* equalNode = node->left;
+	checkNode(equalNode, "=");
+	ASTNode* X = equalNode->left;
+	ASTNode* E = X->right;
+	ASTNode* nextEqualNode = equalNode->right;
+	ASTNode* newComma = new ASTNode_NT(",");
+	ASTNode* newTau = new ASTNode_NT("tau");
+	node->left = newComma;
+	newComma->right = newTau;
+	newComma->left = X;
+	newTau->left = E;
+	while (nextEqualNode != NULL) {
+		delete equalNode;
+		checkNode(nextEqualNode, "=");
+		ASTNode* nextX = nextEqualNode->left;
+		ASTNode* nextE = nextX->right;
+		X->right = nextX;
+		E->right = nextE;
+		X = nextX;
+		E = nextE;
+		X->right = NULL;
+		E->right = NULL;
+		equalNode = nextEqualNode;
+		nextEqualNode = nextEqualNode->right;
+	}
+}
+
+void Lexicon :: standardizeRec(ASTNode* node) {
+	node->setContent("=");
+	ASTNode* equalNode = node->left;
+	checkNode(equalNode, "=");
+	ASTNode* X = equalNode->left;
+	ASTNode* E = X->right;
+	ASTNode* newGamma = new ASTNode_NT("gamma");
+	ASTNode* newLambda = new ASTNode_NT("lambda");
+	ASTNode* YStar = new ASTNode_NT("YStar");
+	ASTNode* copyOfX = new ASTNode_ID(X->getType(), X->getContent());
+	node->left = X;
+	X->right = newGamma;
+	newGamma->left = YStar;
+	YStar->right = newLambda;
+	newLambda->left = copyOfX;
+	copyOfX->right = E;
+	delete equalNode;
 }
 
 // --------------------------------------------Procedures--------------------------------------------
@@ -310,7 +492,7 @@ void Lexicon :: read(int type, string content, string calledBy) {
 	// EOF????
 }
 
-void Lexicon :: start() {
+void Lexicon :: startParse() {
 	procE();
 	if (stackOfNodes.size() != 1) {
 		cout << "Error: Failed to get the only root." << endl;
